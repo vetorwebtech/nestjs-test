@@ -1,7 +1,7 @@
 import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common';
 import {MinioService} from 'nestjs-minio-client';
 import * as crypto from 'crypto'
-import {BufferedFile} from "../model/file.model";
+import {BufferedFile} from "../model/pojo/file.model";
 import {MinioConstant} from "../constant/minio.constant";
 
 @Injectable()

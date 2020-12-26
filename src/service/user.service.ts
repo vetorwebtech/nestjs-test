@@ -10,14 +10,6 @@ export class UserService {
 
 
     constructor(@InjectRepository(User) private usersRepository: Repository<User>) {
-        // for (let i = 0; i < 10; i++) {
-        //     const user: User = new User();
-        //     user.name = 'fiorenzo' + i;
-        //     user.surname = 'pizza + i';
-        //     user.age = i * 3;
-        //     this.logger.log(user);
-        //     this.usersRepository.save(user);
-        // }
     }
 
     create(user: User): User {

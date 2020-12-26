@@ -1,5 +1,5 @@
 import {OnEvent} from "@nestjs/event-emitter";
-import {UploadFileEvent} from "../../model/upload.file.event";
+import {UploadFileEvent} from "../../model/pojo/upload.file.event";
 import {Injectable, Logger} from "@nestjs/common";
 
 @Injectable()

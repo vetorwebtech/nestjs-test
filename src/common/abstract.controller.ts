@@ -1,8 +1,18 @@
 import {Repository, SelectQueryBuilder} from "typeorm";
-import {InjectRepository} from "@nestjs/typeorm";
-import {Body, DefaultValuePipe, Delete, Get, Param, Post, Put, Query, Req, Res} from "@nestjs/common";
-import {User} from "../model/user";
-import {UpdateResult} from "typeorm/query-builder/result/UpdateResult";
+import {
+    Body,
+    DefaultValuePipe,
+    Delete,
+    Get,
+    HttpException,
+    HttpStatus,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    Res
+} from "@nestjs/common";
 import {DeleteResult} from "typeorm/query-builder/result/DeleteResult";
 
 export abstract class AbstractController<T, U> {
@@ -55,19 +65,28 @@ export abstract class AbstractController<T, U> {
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: U) {
+    async delete(@Param('id') id: U) {
         this.preDelete(id);
         const tDeleted: DeleteResult = await this.repository.delete(id);
         return tDeleted;
     }
 
+    @Get(':id')
+    async fecth(@Param('id') id: U) {
+        const post = await this.repository.findOne(id);
+        if (post) {
+            return post;
+        }
+        throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
+    }
+
     @Get()
-    async findAll(@Query("startRow", new DefaultValuePipe(0)) startRow: number,
-                  @Query("pageSize", new DefaultValuePipe(10)) pageSize: number,
-                  @Query("orderBy") orderBy: string,
-                  @Query() query,
-                  @Req() req,
-                  @Res() res) {
+    async list(@Query("startRow", new DefaultValuePipe(0)) startRow: number,
+               @Query("pageSize", new DefaultValuePipe(10)) pageSize: number,
+               @Query("orderBy") orderBy: string,
+               @Query() query,
+               @Req() req,
+               @Res() res) {
         if (!orderBy) orderBy = this.getDefaultOrderBy();
         const search: SelectQueryBuilder<T> = this.getSearch(query, orderBy);
         search.skip(startRow).take(pageSize);

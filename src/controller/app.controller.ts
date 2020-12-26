@@ -5,7 +5,7 @@ import {UserService} from "../service/user.service";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {MinioClientService} from "../service/minio-client.service";
 import {EventEmitter2} from '@nestjs/event-emitter';
-import {UploadFileEvent} from "../model/upload.file.event";
+import {UploadFileEvent} from "../model/pojo/upload.file.event";
 
 @Controller()
 export class AppController {
