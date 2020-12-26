@@ -1,0 +1,36 @@
+on: push
+name: Build and Publish Front End Framework Website
+jobs:
+  Angular-Build-Action:
+    name: Angular-Build-Action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.1.0
+        with:
+          fetch-depth: 1
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+      - name: Build Project
+        run: |
+          npm install
+          npm run build
+      - name: Publish Image
+        uses: matootie/github-docker@v3.0.0
+        with:
+          accessToken: ${{ github.token }}
+          contextName: docker/Dockerfile
+      - name: docker-compose update using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            docker-compose -f ~/services/flower1/docker-compose.yml pull
+            docker-compose -f ~/services/flower1/docker-compose.yml stop
+            docker-compose -f ~/services/flower1/docker-compose.yml up -d
