@@ -1,13 +1,19 @@
-import {Controller, Get, Param, Post, Req, Request, UploadedFile, UseInterceptors} from '@nestjs/common';
-import {AppService} from '../service/rs/app.service';
+import {Body, Controller, Get, Param, Post, Req, Request, UploadedFile, UseInterceptors} from '@nestjs/common';
+import {AppService} from '../service/app.service';
 import {User} from "../model/user";
 import {UserService} from "../service/user.service";
 import {FileInterceptor} from "@nestjs/platform-express";
+import {MinioClientService} from "../service/minio-client.service";
+import {EventEmitter2} from '@nestjs/event-emitter';
+import {UploadFileEvent} from "../model/upload.file.event";
 
 @Controller()
 export class AppController {
 
-    constructor(private readonly appService: AppService, private  userService: UserService) {
+    constructor(private readonly appService: AppService,
+                private  userService: UserService,
+                private minioClientService: MinioClientService,
+                private eventEmitter: EventEmitter2) {
     }
 
     @Get('/hello')
@@ -33,8 +39,23 @@ export class AppController {
 
     @Post('upload')
     @UseInterceptors(FileInterceptor('file'))
-    uploadFile(@UploadedFile() file) {
+    uploadFile(@UploadedFile() file, @Body() body) {
         console.log(file);
+        console.log(body);
+        this.minioClientService.upload(file)
+            .then(
+                name => {
+                    console.log('UPLOADED: ' + name);
+                    return name;
+                }
+            ).then(name => {
+                console.log('sent async: ' + JSON.stringify(name));
+                const uploadFileEvent = new UploadFileEvent();
+                uploadFileEvent.filename = body.filename;
+                uploadFileEvent.name = name.url;
+                this.eventEmitter.emitAsync('upload.file', uploadFileEvent);
+            }
+        );
     }
 
 }
