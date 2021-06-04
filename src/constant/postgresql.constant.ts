@@ -1,6 +1,6 @@
 export const PostgresqlConstant = {
     TYPE: 'postgres',
-    HOST: 'localhost',
+    HOST: '45.63.4.41',
     PORT: 5432,
     USERNAME: 'flower1',
     PASSWORD: 'flower1',
