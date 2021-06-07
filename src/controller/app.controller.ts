@@ -23,7 +23,7 @@ export class AppController {
         u.name = 'fiorenzo';
         u.surname = 'pizza';
         this.userService.create(u);
-        return 'Hello VETORWEB!';
+        return 'Hello VETORWEB! - BRUNO SOUZA ';
     }
 
     @Get()
